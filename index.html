@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sumsub · Reusable Identity · Bhanu Kumar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --bg:    #06080e;
+  --bg2:   #0b0f1a;
+  --bg3:   #101522;
+  --bg4:   #161d2e;
+  --bg5:   #1c2539;
+  --bdr:   rgba(255,255,255,0.055);
+  --bdr2:  rgba(255,255,255,0.10);
+  --bdr3:  rgba(255,255,255,0.18);
+  --t1:    #e8edf5;
+  --t2:    #7a8ba3;
+  --t3:    #3e506a;
+  --teal:  #00c9a7;
+  --teal2: rgba(0,201,167,0.12);
+  --teal3: rgba(0,201,167,0.06);
+  --tealt: #33d9bc;
+  --blue:  #4f8ef7;
+  --blued: rgba(79,142,247,0.10);
+  --amber: #f59e0b;
+  --ambd:  rgba(245,158,11,0.10);
+  --red:   #f87171;
+  --redd:  rgba(248,113,113,0.10);
+  --pur:   #a78bfa;
+  --purd:  rgba(167,139,250,0.10);
+}
+
+html{scroll-behavior:smooth;scroll-padding-top:58px;}
+
+body{
+  background:var(--bg);
+  color:var(--t1);
+  font-family:'DM Sans',system-ui,sans-serif;
+  font-size:16px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* grain texture */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");
+}
+
+/* reading progress bar */
+.rbar{position:fixed;top:0;left:0;height:2px;width:0%;background:var(--teal);z-index:1000;transition:width .08s linear;}
+
+/* ===================== NAV */
+.nav{
+  position:sticky;top:0;z-index:500;
+  background:rgba(6,8,14,0.93);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--bdr);
+  padding:0 5vw;
+}
+.nav-i{
+  max-width:1180px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  height:58px;gap:16px;
+}
+.nav-brand{
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;
+  color:var(--t3);letter-spacing:0.04em;
+}
+.nav-brand .dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--teal);
+  box-shadow:0 0 8px rgba(0,201,167,0.5);
+  animation:pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.45;transform:scale(0.65);}}
+.nav-brand .brand-txt{color:var(--t2);}
+.nav-brand .brand-co{color:var(--teal);}
+
+.nav-links{display:flex;gap:2px;}
+.nl{
+  font-size:12px;font-weight:500;padding:6px 13px;
+  border-radius:100px;border:1px solid transparent;
+  color:var(--t2);background:transparent;
+  text-decoration:none;transition:all .14s;white-space:nowrap;
+}
+.nl:hover{border-color:var(--bdr2);color:var(--t1);}
+.nl.cta{background:var(--teal);border-color:var(--teal);color:#06080e;font-weight:600;}
+.nl.cta:hover{background:var(--tealt);border-color:var(--tealt);}
+
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;flex-shrink:0;}
+.hbg span{display:block;width:21px;height:1.5px;background:var(--t2);border-radius:2px;transition:all .3s;}
+.hbg.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.hbg.open span:nth-child(2){opacity:0;}
+.hbg.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+
+.mob-menu{
+  display:none;position:fixed;inset:58px 0 0;
+  background:rgba(6,8,14,0.98);backdrop-filter:blur(20px);
+  z-index:490;flex-direction:column;padding:28px 5vw;gap:0;
+  border-top:1px solid var(--bdr);
+}
+.mob-menu.open{display:flex;}
+.mob-menu a{
+  display:block;font-size:18px;font-family:'Epilogue',sans-serif;font-weight:600;
+  color:var(--t1);text-decoration:none;
+  padding:16px 0;border-bottom:1px solid var(--bdr);
+}
+.mob-menu a:last-child{border-bottom:none;}
+.mob-menu a.mob-cta{color:var(--teal);}
+
+@media(max-width:760px){.nav-links{display:none;}.hbg{display:flex;}}
+
+/* ===================== LAYOUT */
+.wrap{max-width:1180px;margin:0 auto;padding:0 5vw;}
+section{padding:96px 0;border-bottom:1px solid var(--bdr);}
+section:last-of-type{border-bottom:none;}
+
+/* section labels */
+.sec-eye{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  font-weight:500;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:20px;display:block;
+}
+
+/* ===================== HERO */
+.hero{
+  min-height:100svh;
+  display:flex;align-items:center;
+  padding:80px 5vw 60px;
+  position:relative;overflow:hidden;
+  border-bottom:1px solid var(--bdr);
+}
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 30%, rgba(0,201,167,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 20% 70%, rgba(79,142,247,0.05) 0%, transparent 60%);
+}
+.hero-grid{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+}
+.hero-inner{
+  max-width:1180px;margin:0 auto;width:100%;
+  position:relative;z-index:1;
+}
+.hero-kicker{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--t3);letter-spacing:0.08em;text-transform:uppercase;
+  border:1px solid var(--bdr);border-radius:100px;
+  padding:6px 14px;margin-bottom:32px;
+}
+.hero-kicker .k-dot{width:5px;height:5px;border-radius:50%;background:var(--teal);}
+.hero-h1{
+  font-family:'Epilogue',sans-serif;font-size:clamp(2.8rem,6vw,5.2rem);
+  font-weight:800;line-height:1.04;letter-spacing:-0.02em;
+  color:var(--t1);margin-bottom:28px;max-width:880px;
+}
+.hero-h1 .hl{
+  background:linear-gradient(135deg,var(--teal) 0%,var(--blue) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{
+  font-size:1.05rem;color:var(--t2);max-width:560px;
+  margin-bottom:44px;line-height:1.8;
+}
+.hero-stats{
+  display:flex;flex-wrap:wrap;gap:32px;margin-bottom:52px;
+}
+.hstat{border-left:2px solid var(--teal2);padding-left:16px;}
+.hstat-n{
+  font-family:'Epilogue',sans-serif;font-size:1.9rem;font-weight:800;
+  color:var(--teal);line-height:1;margin-bottom:4px;
+}
+.hstat-l{font-size:11px;color:var(--t3);letter-spacing:0.04em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;}
+.hero-links{display:flex;gap:12px;flex-wrap:wrap;}
+.hl-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600;padding:10px 22px;
+  border-radius:100px;text-decoration:none;transition:all .16s;
+  white-space:nowrap;
+}
+.hl-btn.primary{background:var(--teal);color:#06080e;}
+.hl-btn.primary:hover{background:var(--tealt);}
+.hl-btn.secondary{border:1px solid var(--bdr2);color:var(--t2);}
+.hl-btn.secondary:hover{border-color:var(--bdr3);color:var(--t1);}
+
+/* ===================== DUAL-TRACK VISUAL */
+.track-wrap{
+  display:grid;grid-template-columns:1fr 1fr;gap:24px;
+  margin-top:48px;
+}
+@media(max-width:680px){.track-wrap{grid-template-columns:1fr;}}
+.track-card{
+  border:1px solid var(--bdr2);border-radius:12px;
+  padding:28px;background:var(--bg2);position:relative;overflow:hidden;
+}
+.track-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.track-card.b2b::before{background:var(--teal);}
+.track-card.b2c::before{background:var(--blue);}
+.track-badge{
+  display:inline-block;font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:0.08em;text-transform:uppercase;
+  padding:4px 10px;border-radius:4px;margin-bottom:14px;
+}
+.track-card.b2b .track-badge{background:var(--teal2);color:var(--teal);}
+.track-card.b2c .track-badge{background:var(--blued);color:var(--blue);}
+.track-name{font-family:'Epilogue',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:8px;}
+.track-desc{font-size:13.5px;color:var(--t2);margin-bottom:18px;line-height:1.7;}
+.track-list{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.track-list li{
+  font-size:12.5px;color:var(--t2);
+  padding-left:18px;position:relative;
+}
+.track-list li::before{
+  content:'';position:absolute;left:0;top:8px;
+  width:6px;height:6px;border-radius:50%;
+}
+.track-card.b2b .track-list li::before{background:var(--teal);}
+.track-card.b2c .track-list li::before{background:var(--blue);}
+
+/* ===================== AUDIT */
+.tab-nav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:32px;}
+.tbtn{
+  font-size:12.5px;font-weight:500;padding:7px 16px;
+  border-radius:100px;border:1px solid var(--bdr);
+  color:var(--t2);background:transparent;cursor:pointer;
+  transition:all .14s;white-space:nowrap;
+}
+.tbtn:hover{border-color:var(--bdr2);color:var(--t1);}
+.tbtn.on{background:var(--teal2);border-color:var(--teal);color:var(--teal);}
+
+.apanel{display:none;}
+.apanel.on{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+
+.acell{
+  border:1px solid var(--bdr);border-radius:10px;
+  padding:22px;background:var(--bg2);
+  transition:border-color .14s;
+}
+.acell:hover{border-color:var(--bdr2);}
+.acell strong{
+  display:block;font-family:'Epilogue',sans-serif;font-size:13.5px;
+  font-weight:700;color:var(--t1);margin-bottom:8px;
+}
+.acell p,.acell{font-size:13.5px;color:var(--t2);line-height:1.72;}
+.acell .atag{
+  display:inline-block;font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:0.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:3px;margin-bottom:10px;
+}
+.atag.warn{background:var(--ambd);color:var(--amber);}
+.atag.gap{background:var(--redd);color:var(--red);}
+.atag.opp{background:var(--teal2);color:var(--teal);}
+.atag.obs{background:var(--blued);color:var(--blue);}
+
+/* ===================== GTM BRIEF */
+.gtm-timeline{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:16px;margin-top:32px;
+}
+.gtm-phase{
+  border:1px solid var(--bdr);border-radius:10px;
+  padding:24px;background:var(--bg2);position:relative;
+}
+.ph-label{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:6px;display:block;
+}
+.ph-title{
+  font-family:'Epilogue',sans-serif;font-size:1rem;font-weight:700;
+  color:var(--t1);margin-bottom:14px;
+}
+.ph-items{display:flex;flex-direction:column;gap:8px;}
+.ph-item{
+  font-size:13px;color:var(--t2);padding-left:14px;position:relative;
+}
+.ph-item::before{
+  content:'';position:absolute;left:0;top:8px;
+  width:5px;height:5px;border-radius:50%;background:var(--teal);
+}
+.gtm-note{
+  margin-top:32px;border:1px solid var(--ambd);border-radius:10px;
+  padding:24px;background:var(--ambd);
+}
+.gtm-note-head{
+  font-family:'Epilogue',sans-serif;font-size:13.5px;font-weight:700;
+  color:var(--amber);margin-bottom:8px;display:flex;align-items:center;gap:8px;
+}
+.gtm-note p{font-size:13.5px;color:var(--t2);line-height:1.72;}
+
+/* ===================== PERSONA TOGGLE */
+.persona-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:12px;margin-bottom:32px;
+}
+.pbtn{
+  border:1px solid var(--bdr);border-radius:10px;
+  padding:18px 16px;cursor:pointer;background:var(--bg2);
+  transition:all .14s;text-align:left;
+}
+.pbtn:hover{border-color:var(--bdr2);}
+.pbtn.on{border-color:var(--teal);background:var(--teal3);}
+.pbtn-role{font-size:12px;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-bottom:4px;}
+.pbtn-name{font-family:'Epilogue',sans-serif;font-size:14px;font-weight:700;color:var(--t1);}
+
+.persona-out{
+  border:1px solid var(--bdr2);border-radius:12px;
+  padding:28px 32px;background:var(--bg2);
+  min-height:200px;
+}
+.po-role{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;
+  letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);
+  margin-bottom:10px;display:block;
+}
+.po-headline{
+  font-family:'Epilogue',sans-serif;font-size:1.35rem;font-weight:800;
+  color:var(--t1);margin-bottom:16px;line-height:1.3;
+}
+.po-sub{font-size:13.5px;color:var(--t2);margin-bottom:20px;line-height:1.72;}
+.po-hooks{display:flex;flex-direction:column;gap:8px;}
+.po-hook{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:13px;color:var(--t2);
+}
+.po-hook .hook-icon{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--teal2);color:var(--teal);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;flex-shrink:0;margin-top:1px;
+}
+.po-prompt{
+  font-size:14px;color:var(--t3);font-style:italic;
+  padding:20px;text-align:center;
+}
+
+/* ===================== EXPERIMENTS */
+.exp-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:16px;margin-top:32px;
+}
+.exp-card{
+  border:1px solid var(--bdr);border-radius:10px;
+  padding:24px;background:var(--bg2);
+}
+.exp-type{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:0.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:3px;display:inline-block;margin-bottom:12px;
+}
+.exp-type.acq{background:var(--teal2);color:var(--teal);}
+.exp-type.act{background:var(--blued);color:var(--blue);}
+.exp-type.ret{background:var(--purd);color:var(--pur);}
+.exp-title{font-family:'Epilogue',sans-serif;font-size:14px;font-weight:700;color:var(--t1);margin-bottom:8px;}
+.exp-hyp{font-size:13px;color:var(--t2);margin-bottom:14px;line-height:1.7;}
+.exp-meta{display:flex;gap:12px;flex-wrap:wrap;}
+.exp-pill{
+  font-size:11px;color:var(--t3);padding:4px 10px;
+  border:1px solid var(--bdr);border-radius:100px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* ===================== COPY SECTION */
+.copy-wrap{
+  border:1px solid var(--bdr2);border-radius:12px;
+  overflow:hidden;margin-top:28px;background:var(--bg2);
+}
+.copy-header{
+  padding:14px 24px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;gap:10px;
+}
+.copy-dots{display:flex;gap:6px;}
+.copy-dot{width:10px;height:10px;border-radius:50%;}
+.copy-dot:nth-child(1){background:var(--red);}
+.copy-dot:nth-child(2){background:var(--amber);}
+.copy-dot:nth-child(3){background:var(--teal);}
+.copy-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);margin-left:4px;}
+.copy-body{padding:28px 32px;}
+.copy-headline{
+  font-family:'Epilogue',sans-serif;font-size:1.55rem;font-weight:800;
+  color:var(--t1);line-height:1.25;margin-bottom:16px;
+}
+.copy-body p{font-size:14px;color:var(--t2);margin-bottom:12px;line-height:1.8;}
+.copy-cta{
+  margin-top:20px;display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600;padding:10px 22px;
+  border-radius:100px;background:var(--teal);color:#06080e;cursor:pointer;
+  border:none;
+}
+.copy-rationale{
+  margin-top:0;padding:20px 32px 28px;border-top:1px solid var(--bdr);
+}
+.copy-rationale p{font-size:12.5px;color:var(--t3);line-height:1.72;}
+.copy-rationale strong{color:var(--t2);}
+
+/* ===================== OTHER WORK */
+.work-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:14px;margin-top:40px;
+}
+.wcard{
+  border:1px solid var(--bdr);border-radius:10px;
+  padding:22px;background:var(--bg2);
+  text-decoration:none;color:inherit;
+  transition:border-color .14s,background .14s;display:block;
+}
+.wcard:hover{border-color:var(--bdr2);background:var(--bg3);}
+.wcard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.wcard-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.wcard-tag{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:0.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:3px;
+}
+.wcard-arr{
+  color:var(--t3);font-size:16px;flex-shrink:0;
+  transition:color .14s;
+}
+.wcard:hover .wcard-arr{color:var(--teal);}
+.wcard-title{font-family:'Epilogue',sans-serif;font-size:15px;font-weight:700;color:var(--t1);margin-bottom:6px;}
+.wcard-desc{font-size:12.5px;color:var(--t2);line-height:1.65;}
+
+/* color variants for tags */
+.tag-blue{background:var(--blued);color:var(--blue);}
+.tag-teal{background:var(--teal2);color:var(--teal);}
+.tag-amber{background:var(--ambd);color:var(--amber);}
+.tag-pur{background:var(--purd);color:var(--pur);}
+.tag-red{background:var(--redd);color:var(--red);}
+
+/* ===================== FOOTER */
+.footer{
+  padding:48px 5vw;border-top:1px solid var(--bdr);
+  max-width:1180px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;
+}
+.footer-left{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);}
+.footer-right{display:flex;gap:16px;}
+.f-link{
+  font-size:12px;color:var(--t3);text-decoration:none;
+  transition:color .14s;
+}
+.f-link:hover{color:var(--teal);}
+
+/* ===================== UTILS */
+.intro-text{
+  font-size:1.05rem;color:var(--t2);max-width:680px;
+  line-height:1.8;margin-bottom:44px;
+}
+.divider{height:1px;background:var(--bdr);margin:40px 0;}
+
+@media(max-width:600px){
+  section{padding:64px 0;}
+  .hero{padding:64px 5vw 48px;}
+  .hero-stats{gap:20px;}
+  .hstat-n{font-size:1.5rem;}
+  .copy-body{padding:20px;}
+  .footer{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<div class="rbar" id="rbar"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-i">
+    <div class="nav-brand">
+      <div class="dot"></div>
+      <span class="brand-txt">bhanu × </span><span class="brand-co">sumsub</span>
+    </div>
+    <div class="nav-links">
+      <a href="#audit" class="nl">Positioning Audit</a>
+      <a href="#gtm" class="nl">GTM Brief</a>
+      <a href="#personas" class="nl">Personas</a>
+      <a href="#experiments" class="nl">Experiments</a>
+      <a href="#work" class="nl">Other Work</a>
+      <a href="https://drive.google.com/file/d/1l72rBYn2Lq907lYXSALRZhqMUxB7Mwad/view" target="_blank" class="nl cta">Resume</a>
+    </div>
+    <button class="hbg" id="hbg" onclick="toggleMob()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mob-menu" id="mob">
+  <a href="#audit" onclick="closeMob()">Positioning Audit</a>
+  <a href="#gtm" onclick="closeMob()">GTM Brief</a>
+  <a href="#personas" onclick="closeMob()">Personas</a>
+  <a href="#experiments" onclick="closeMob()">Experiments</a>
+  <a href="#work" onclick="closeMob()">Other Work</a>
+  <a href="https://drive.google.com/file/d/1l72rBYn2Lq907lYXSALRZhqMUxB7Mwad/view" target="_blank" class="mob-cta" onclick="closeMob()">Resume</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-kicker">
+      <span class="k-dot"></span>
+      Reusable Identity · Product Marketing
+    </div>
+    <h1 class="hero-h1">
+      Verify once.<br>
+      <span class="hl">Trust everywhere.</span>
+    </h1>
+    <p class="hero-sub">
+      Sumsub is sitting on the most interesting positioning problem in identity right now. Reusable KYC and Sumsub ID are genuinely different products for genuinely different audiences, and the GTM motion has to be different too. This is how I'd approach it.
+    </p>
+    <div class="hero-stats">
+      <div class="hstat">
+        <div class="hstat-n">1 in 3</div>
+        <div class="hstat-l">users already verified via Sumsub</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-n">50%</div>
+        <div class="hstat-l">faster onboarding with Reusable KYC</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-n">4,000+</div>
+        <div class="hstat-l">platforms in the Sumsub ecosystem</div>
+      </div>
+    </div>
+    <div class="hero-links">
+      <a href="#audit" class="hl-btn primary">Read the audit</a>
+      <a href="https://www.linkedin.com/in/bhanuexcalibur" target="_blank" class="hl-btn secondary">LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<!-- DUAL TRACK -->
+<section id="product-map">
+  <div class="wrap">
+    <span class="sec-eye">Product Understanding</span>
+    <h2 style="font-family:'Epilogue',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;margin-bottom:16px;color:var(--t1);">Two products. Two audiences. One platform bet.</h2>
+    <p class="intro-text">
+      Reusable Identity isn't one product, it's a platform strategy. Sumsub is simultaneously building network effects on two sides: one B2B motion to get existing clients to adopt Reusable KYC, and one B2C motion to grow direct Sumsub ID sign-ups. Both require different messaging, different activation channels, and different success metrics.
+    </p>
+    <div class="track-wrap">
+      <div class="track-card b2b">
+        <span class="track-badge">B2B</span>
+        <div class="track-name">Reusable KYC</div>
+        <p class="track-desc">
+          Sold to existing Sumsub clients. The pitch: you share verified user data with other ecosystem partners upon user consent, skipping redundant checks and cutting your onboarding drop-off. A network-effects product that gets more valuable the more clients adopt it.
+        </p>
+        <ul class="track-list">
+          <li>Primary buyer: compliance and product teams at fintechs, crypto exchanges</li>
+          <li>GTM motion: expansion revenue from existing client base, ecosystem partnerships</li>
+          <li>Key metric: Reusable KYC uptake rate among existing accounts</li>
+          <li>Biggest objection: data-sharing anxiety, GDPR liability questions</li>
+        </ul>
+      </div>
+      <div class="track-card b2c">
+        <span class="track-badge">B2C</span>
+        <div class="track-name">Sumsub ID</div>
+        <p class="track-desc">
+          Signed up directly by end users. The pitch: verify once across 4,000+ platforms, never upload your passport again. A consumer-facing identity wallet that creates stickiness and reverse-funnel demand back to Sumsub's B2B clients.
+        </p>
+        <ul class="track-list">
+          <li>Primary buyer: individual users in crypto, fintech, gig economy</li>
+          <li>GTM motion: direct acquisition, partnership distribution through Sumsub clients</li>
+          <li>Key metric: monthly active Sumsub ID users, repeat-use rate</li>
+          <li>Biggest objection: trust and data security skepticism from end consumers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POSITIONING AUDIT -->
+<section id="audit">
+  <div class="wrap">
+    <span class="sec-eye">Positioning Audit</span>
+    <h2 style="font-family:'Epilogue',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;margin-bottom:16px;color:var(--t1);">What the positioning gets right, and where it leaves value on the table.</h2>
+    <p class="intro-text">
+      Sumsub's homepage and product pages carry a clear compliance-focused narrative that works well with regulated-industry buyers. The Reusable Identity launch adds new complexity: it requires two distinct stories running in parallel, targeting different people with different motivations. The current messaging blends them in ways that weaken both.
+    </p>
+
+    <div class="tab-nav">
+      <button class="tbtn on" onclick="swTab('homepage',this)">Homepage</button>
+      <button class="tbtn" onclick="swTab('reusable',this)">Reusable Identity Launch</button>
+      <button class="tbtn" onclick="swTab('competitive',this)">vs Competitors</button>
+      <button class="tbtn" onclick="swTab('network',this)">Network Effects Gap</button>
+    </div>
+
+    <div class="apanel on" id="ap-homepage">
+      <div class="acell">
+        <span class="atag obs">Observation</span>
+        <strong>The "full-cycle" frame is underused</strong>
+        Sumsub's core claim is "full-cycle verification" but this rarely shows up as a strategic argument. It should be the main reason to stay with Sumsub across the customer journey, not just a product category label. Competitors like Persona and Veriff are narrower, and that's actually an opening.
+      </div>
+      <div class="acell">
+        <span class="atag warn">Tension</span>
+        <strong>Three audiences, one homepage</strong>
+        The current homepage simultaneously addresses developers evaluating the API, compliance teams buying KYC/AML, and now consumer end-users signing up for Sumsub ID. These three audiences have completely different intent signals and don't share a common page goal. Someone Googling "reusable KYC" and landing on the Sumsub homepage has to work to find what they came for.
+      </div>
+      <div class="acell">
+        <span class="atag opp">Opportunity</span>
+        <strong>Ecosystem scale is the real moat</strong>
+        "4,000+ platforms" is mentioned in press releases but buried on the product page. This is the Reusable Identity network effect in plain numbers. For a user comparing Sumsub ID to a competitor identity wallet, that number means your verified identity actually works everywhere. Lead with it.
+      </div>
+      <div class="acell">
+        <span class="atag obs">Observation</span>
+        <strong>Clients like Duolingo and Vodafone signal something</strong>
+        Having Duolingo and Vodafone alongside Bitpanda and Bybit in the same client logo row is actually a positioning statement: Sumsub is cross-industry. Most KYC vendors are perceived as "fintech tools." The diversity of the client base should be working harder in the narrative.
+      </div>
+    </div>
+
+    <div class="apanel" id="ap-reusable">
+      <div class="acell">
+        <span class="atag gap">Gap</span>
+        <strong>The launch narrative led with features, not the behavior change</strong>
+        The Reusable Identity press release framed the story as "onboarding times by 50%, conversion rates by 30%." These are platform owner metrics. The more compelling consumer story, "your personal data is verified once and travels with you," barely appeared. Two audiences needed two different angles, not one headline.
+      </div>
+      <div class="acell">
+        <span class="atag gap">Gap</span>
+        <strong>GDPR and consent got one sentence</strong>
+        For any data-sharing product in Europe, consent and compliance are the first objections, not afterthoughts. The launch copy mentions GDPR compliance almost in passing. A dedicated trust section, not buried in a FAQ, would have removed the main hesitation from every compliance buyer reading the announcement.
+      </div>
+      <div class="acell">
+        <span class="atag opp">Opportunity</span>
+        <strong>The "1 in 3" stat is powerful and underplayed</strong>
+        Sumsub's own data shows one in three applicants has already verified through Sumsub before. That number is the most visceral proof that Reusable KYC is a real problem worth solving, not a product innovation in search of a use case. It should be the opening line of every piece of Reusable Identity content.
+      </div>
+      <div class="acell">
+        <span class="atag obs">Observation</span>
+        <strong>Distribution gaps: where did the launch actually land?</strong>
+        The press release reached general tech media. For Reusable KYC's actual buyers, fintech compliance teams and product leads at exchanges, the relevant trade publications (Finextra, The Block, Payments Dive) and community channels (compliance Slack groups, fintech newsletters) needed dedicated seeding. That layer isn't visible from the public launch.
+      </div>
+    </div>
+
+    <div class="apanel" id="ap-competitive">
+      <div class="acell">
+        <span class="atag obs">Observation</span>
+        <strong>Onfido (now Entrust IDV): enterprise trust, limited ecosystem</strong>
+        Onfido's acquisition by Entrust gives it serious enterprise credibility in banking and government. The trade-off: Entrust is a legacy player, which typically means slower product velocity and a more conservative roadmap. Against Sumsub's full-cycle approach, Onfido can't easily offer a reusable identity layer across a 4,000-platform ecosystem.
+      </div>
+      <div class="acell">
+        <span class="atag obs">Observation</span>
+        <strong>Veriff: global document coverage, limited network</strong>
+        Veriff's strength is breadth of document coverage across markets. Their GTM leans toward global consumer apps and marketplaces. The Reusable Identity angle is not a Veriff play right now. Sumsub's competitive frame should acknowledge Veriff's global reach but position the ecosystem network as an asset Veriff simply doesn't have.
+      </div>
+      <div class="acell">
+        <span class="atag obs">Observation</span>
+        <strong>Persona: flexibility without scale</strong>
+        Persona competes on workflow customization, the "build your own KYC flow" pitch. That's a strong argument for product teams who want control. But Persona doesn't have a reusable identity story. A Sumsub client considering Persona needs to understand that customization and portability are not the same product value.
+      </div>
+      <div class="acell">
+        <span class="atag opp">Opportunity</span>
+        <strong>Sumsub's frame: "compliance infrastructure, not just verification"</strong>
+        None of the core competitors are leading with an ecosystem or network play. Sumsub is the only platform positioned to offer both the compliance tooling and the reusable user credential. That's a genuinely differentiated wedge. The GTM story should be: other vendors check identity. Sumsub makes verified identity portable.
+      </div>
+    </div>
+
+    <div class="apanel" id="ap-network">
+      <div class="acell">
+        <span class="atag gap">Gap</span>
+        <strong>The network effect is not being explained as a strategic story</strong>
+        Reusable KYC becomes more valuable as more clients join the ecosystem: more users have existing Sumsub credentials, so more onboardings can skip full verification. But this flywheel is not surfaced in the current messaging. Clients considering adoption don't see why timing matters, or why being an early adopter in the ecosystem is an advantage.
+      </div>
+      <div class="acell">
+        <span class="atag opp">Opportunity</span>
+        <strong>Build the "ecosystem growth" narrative for sales</strong>
+        Every new Reusable KYC client adds their user base to the shared verification pool, which benefits all existing clients too. This is a classic platform network effect. It should have its own one-pager, its own data visualization in the sales deck, and ideally a public dashboard showing ecosystem growth. Mercuryo's published case study (reduced onboarding time across 200+ ecosystem companies) is the template.
+      </div>
+      <div class="acell">
+        <span class="atag warn">Tension</span>
+        <strong>Consumer trust is the prerequisite Sumsub ID hasn't fully solved publicly</strong>
+        Users sharing their identity credential across 4,000 platforms is only compelling if they trust the platform holding that credential. Sumsub's B2B reputation is strong, but B2C trust is built differently: through visible user testimonials, clear data control messaging, and a consumer-facing privacy story that currently doesn't exist at the same quality as the compliance messaging.
+      </div>
+      <div class="acell">
+        <span class="atag opp">Opportunity</span>
+        <strong>Activate the existing user base as a distribution channel</strong>
+        Every time a Sumsub client onboards a user, that user is a potential Sumsub ID sign-up. Currently that touchpoint is only used for verification. Adding a "save your identity to Sumsub ID" prompt post-verification is an acquisition motion that costs nothing to run and scales with every client. The users are already there.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GTM BRIEF -->
+<section id="gtm">
+  <div class="wrap">
+    <span class="sec-eye">GTM Brief</span>
+    <h2 style="font-family:'Epilogue',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;margin-bottom:16px;color:var(--t1);">How I'd run the Reusable Identity GTM motion in 90 days.</h2>
+    <p class="intro-text">
+      The B2B and B2C motions are at different stages of maturity and need different resources. The B2B Reusable KYC play is an expansion revenue problem: you have 4,000 clients, most of whom aren't on Reusable KYC yet. The B2C Sumsub ID play is an acquisition problem: you need consumer trust and organic distribution. Here's how I'd sequence the work.
+    </p>
+
+    <div class="gtm-timeline">
+      <div class="gtm-phase">
+        <span class="ph-label">Month 1 · Foundation</span>
+        <div class="ph-title">Fix the positioning layer first</div>
+        <div class="ph-items">
+          <div class="ph-item">Separate the B2B and B2C narratives: Reusable KYC gets a dedicated landing page, Sumsub ID gets its own page with consumer-facing copy</div>
+          <div class="ph-item">Write a one-pager for sales: "The case for Reusable KYC adoption" with the ecosystem network effect clearly explained</div>
+          <div class="ph-item">Surface the "1 in 3 users already verified" stat across all Reusable Identity content: homepage, sales materials, social</div>
+          <div class="ph-item">Audit the existing Reusable KYC client list and identify the 10 best candidates for a new case study</div>
+        </div>
+      </div>
+      <div class="gtm-phase">
+        <span class="ph-label">Month 2 · Activation</span>
+        <div class="ph-title">Drive Reusable KYC uptake from existing accounts</div>
+        <div class="ph-items">
+          <div class="ph-item">Launch an in-product prompt: clients not on Reusable KYC see a "your users are already verified elsewhere" banner in the dashboard</div>
+          <div class="ph-item">Run a Customer Success-driven campaign: CS teams get a short talk track and a co-sell incentive to surface Reusable KYC in QBRs</div>
+          <div class="ph-item">Publish the ecosystem growth stat: number of users with reusable credentials in the ecosystem, updated monthly. Make it a public trust signal.</div>
+          <div class="ph-item">Trade press seeding: Finextra, Payments Dive, The Block. Pitch the "verification fatigue" story as a sector problem with a named data point.</div>
+        </div>
+      </div>
+      <div class="gtm-phase">
+        <span class="ph-label">Month 3 · Scale</span>
+        <div class="ph-title">Build the Sumsub ID consumer acquisition engine</div>
+        <div class="ph-items">
+          <div class="ph-item">Add a post-verification Sumsub ID sign-up prompt across all client touchpoints: "Verified? Save your identity for next time."</div>
+          <div class="ph-item">Partner distribution: identify 5 high-volume Sumsub clients willing to co-promote Sumsub ID to their user base in exchange for faster onboarding data</div>
+          <div class="ph-item">Consumer trust content: publish "How Sumsub ID protects your data" as a dedicated page. Answer GDPR questions in plain language.</div>
+          <div class="ph-item">Review first 90 days: activation metrics, Reusable KYC uptake rate, Sumsub ID sign-up volume. Adjust channel mix based on what's converting.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gtm-note">
+      <div class="gtm-note-head">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm9 3a1 1 0 11-2 0 1 1 0 012 0zM6.92 6.085c.081-.16.19-.299.34-.398.145-.097.371-.187.74-.187.28 0 .553.087.738.225A.613.613 0 019 6.25c0 .177-.04.264-.077.318a.956.956 0 01-.277.245c-.076.051-.158.1-.258.168a2.293 2.293 0 00-.213.184.82.82 0 00-.182.305.75.75 0 01-1.448-.394c.09-.334.26-.611.497-.832.234-.216.487-.3.762-.415.052-.021.12-.051.177-.097a.348.348 0 00.113-.218.097.097 0 00-.033-.072.554.554 0 00-.303-.068c-.12 0-.208.022-.27.064a.413.413 0 00-.14.17.75.75 0 11-1.372-.607z" fill="currentColor"/></svg>
+        Key assumption to validate early
+      </div>
+      <p>The B2B and B2C motions can reinforce each other, but only if the consumer trust layer (Sumsub ID data control, privacy UX) is strong enough. If early Sumsub ID users have negative experiences around data transparency, that creates noise that makes the Reusable KYC B2B sell harder. Fix the consumer trust story before scaling acquisition.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PERSONA MESSAGING -->
+<section id="personas">
+  <div class="wrap">
+    <span class="sec-eye">Persona Messaging</span>
+    <h2 style="font-family:'Epilogue',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;margin-bottom:16px;color:var(--t1);">Same product category. Completely different conversations.</h2>
+    <p class="intro-text">
+      The Reusable Identity story has to shift significantly depending on who's reading it. A compliance officer at a crypto exchange has different fears from a product manager at a neobank, and both are different from an end user who just wants to open an account without uploading their passport again.
+    </p>
+
+    <div class="persona-grid">
+      <button class="pbtn" onclick="showPersona('compliance')">
+        <div class="pbtn-role">B2B · Buyer</div>
+        <div class="pbtn-name">Compliance Officer</div>
+      </button>
+      <button class="pbtn" onclick="showPersona('product')">
+        <div class="pbtn-role">B2B · Champion</div>
+        <div class="pbtn-name">Product Manager</div>
+      </button>
+      <button class="pbtn" onclick="showPersona('cto')">
+        <div class="pbtn-role">B2B · Evaluator</div>
+        <div class="pbtn-name">CTO / Tech Lead</div>
+      </button>
+      <button class="pbtn" onclick="showPersona('consumer')">
+        <div class="pbtn-role">B2C · End User</div>
+        <div class="pbtn-name">Crypto / Fintech User</div>
+      </button>
+    </div>
+
+    <div class="persona-out" id="persona-out">
+      <div class="po-prompt">Select a persona above to see the messaging shift.</div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIMENTS -->
+<section id="experiments">
+  <div class="wrap">
+    <span class="sec-eye">Growth Experiments</span>
+    <h2 style="font-family:'Epilogue',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;margin-bottom:16px;color:var(--t1);">Rapid experiments I'd run across the Reusable Identity funnel.</h2>
+    <p class="intro-text">
+      These aren't theoretical campaign ideas. They're specific, testable hypotheses with clear success metrics. The goal is to find what actually drives Reusable KYC adoption and Sumsub ID sign-ups before committing to scaled channels.
+    </p>
+
+    <div class="exp-grid">
+      <div class="exp-card">
+        <span class="exp-type acq">Acquisition</span>
+        <div class="exp-title">Post-verification Sumsub ID prompt</div>
+        <p class="exp-hyp">A user who just completed KYC on any Sumsub client platform is at peak awareness of identity friction. Adding a "save for next time" prompt at that moment should convert significantly better than cold acquisition.</p>
+        <div class="exp-meta">
+          <span class="exp-pill">Test: prompt vs no prompt</span>
+          <span class="exp-pill">Metric: Sumsub ID sign-up rate</span>
+          <span class="exp-pill">Duration: 30 days</span>
+        </div>
+      </div>
+      <div class="exp-card">
+        <span class="exp-type acq">Acquisition</span>
+        <div class="exp-title">Ecosystem size as a conversion lever</div>
+        <p class="exp-hyp">Does showing the number of Sumsub ecosystem platforms on the Sumsub ID landing page increase sign-up intent? Hypothesis: "works across 4,000+ platforms" is more compelling than generic "verify once, use everywhere" copy.</p>
+        <div class="exp-meta">
+          <span class="exp-pill">Test: A/B copy variants</span>
+          <span class="exp-pill">Metric: landing page CVR</span>
+          <span class="exp-pill">Duration: 3 weeks</span>
+        </div>
+      </div>
+      <div class="exp-card">
+        <span class="exp-type act">Activation</span>
+        <div class="exp-title">Reusable KYC dashboard nudge for existing clients</div>
+        <p class="exp-hyp">Clients who have never enabled Reusable KYC likely haven't because of activation friction, not lack of interest. A contextual banner in the Sumsub dashboard ("X of your users have already verified with Sumsub elsewhere") should increase exploration rate.</p>
+        <div class="exp-meta">
+          <span class="exp-pill">Test: banner vs no banner</span>
+          <span class="exp-pill">Metric: Reusable KYC settings page visits</span>
+          <span class="exp-pill">Duration: 45 days</span>
+        </div>
+      </div>
+      <div class="exp-card">
+        <span class="exp-type act">Activation</span>
+        <div class="exp-title">CS talk track: "Your drop-off is a Reusable KYC problem"</div>
+        <p class="exp-hyp">Clients experiencing high onboarding drop-off rates are a natural Reusable KYC audience. Equipping CS with a data-backed talk track that attributes drop-off to re-verification friction (using Sumsub's own aggregate data) should increase Reusable KYC adoption conversations.</p>
+        <div class="exp-meta">
+          <span class="exp-pill">Test: CS pilot cohort vs control</span>
+          <span class="exp-pill">Metric: Reusable KYC demo requests</span>
+          <span class="exp-pill">Duration: 60 days</span>
+        </div>
+      </div>
+      <div class="exp-card">
+        <span class="exp-type ret">Retention</span>
+        <div class="exp-title">Sumsub ID "usage activity" email sequence</div>
+        <p class="exp-hyp">Users who sign up for Sumsub ID but don't experience a reuse event within 30 days are likely to churn. An email sequence triggered by "no reuse event" that shows them how many platforms they could use their ID on should reactivate passive users.</p>
+        <div class="exp-meta">
+          <span class="exp-pill">Test: triggered sequence vs no email</span>
+          <span class="exp-pill">Metric: D30 repeat usage rate</span>
+          <span class="exp-pill">Duration: 45 days</span>
+        </div>
+      </div>
+      <div class="exp-card">
+        <span class="exp-type ret">Retention</span>
+        <div class="exp-title">Trust transparency page for Sumsub ID</div>
+        <p class="exp-hyp">Consumer data storage hesitation is the main reason identity wallets see high sign-up but low retention. A dedicated "your data, your control" page with explicit GDPR rights, deletion flow, and sharing audit trail should reduce churn from privacy-conscious users.</p>
+        <div class="exp-meta">
+          <span class="exp-pill">Test: page exists vs no page</span>
+          <span class="exp-pill">Metric: D60 active user retention</span>
+          <span class="exp-pill">Duration: 60 days</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COPY SAMPLE -->
+<section id="copy">
+  <div class="wrap">
+    <span class="sec-eye">Copy Sample</span>
+    <h2 style="font-family:'Epilogue',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;margin-bottom:12px;color:var(--t1);">How I'd write the Reusable KYC B2B landing page hero.</h2>
+    <p style="color:var(--t2);font-size:14px;margin-bottom:32px;max-width:620px;">
+      The current Reusable KYC page leads with feature description. Here's a version that leads with the buyer's actual problem and lets the product answer it.
+    </p>
+    <div class="copy-wrap">
+      <div class="copy-header">
+        <div class="copy-dots">
+          <div class="copy-dot"></div>
+          <div class="copy-dot"></div>
+          <div class="copy-dot"></div>
+        </div>
+        <span class="copy-label">Reusable KYC · Landing Page Hero · Revised</span>
+      </div>
+      <div class="copy-body">
+        <div class="copy-headline">One in three of your applicants has already passed KYC. Somewhere.</div>
+        <p>Right now, those users are uploading their passport again, going through liveness checks again, and waiting for approval again. Not because you need to verify them. Because your systems don't know they've already been verified.</p>
+        <p>Reusable KYC fixes this. When a user has completed KYC with any other platform in the Sumsub ecosystem, your onboarding inherits that verified status, with their consent, and within your compliance framework. Full compliance. Instant onboarding.</p>
+        <button class="copy-cta">See how it works</button>
+      </div>
+      <div class="copy-rationale">
+        <p><strong>Why this works:</strong> The original copy leads with "eliminate repetitive verification." This version leads with the buyer's current state, forcing them to picture the problem in their own onboarding flow before the product is even named. "One in three" is Sumsub's own verified data point and it's specific enough to create credibility while being universally recognizable to anyone who runs a fintech platform. The phrase "your systems don't know" puts the blame on the process, not the user, which is the framing compliance and product teams actually respond to.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OTHER WORK -->
+<section id="work">
+  <div class="wrap">
+    <span class="sec-eye">Other Relevant Work</span>
+    <h2 style="font-family:'Epilogue',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;margin-bottom:12px;color:var(--t1);">Selected projects, ranked by relevance.</h2>
+    <p style="color:var(--t2);font-size:14px;margin-bottom:0;max-width:560px;">B2B SaaS product marketing across fintech, compliance, payments, and growth-stage companies.</p>
+
+    <div class="work-grid">
+
+      <a href="https://bhanuexcalibur.github.io/Continuous/" target="_blank" class="wcard">
+        <div class="wcard-top">
+          <div class="wcard-tags">
+            <span class="wcard-tag tag-teal">Positioning</span>
+            <span class="wcard-tag tag-blue">Messaging</span>
+          </div>
+          <span class="wcard-arr">↗</span>
+        </div>
+        <div class="wcard-title">Continuous</div>
+        <p class="wcard-desc">Full positioning audit and messaging architecture for a compliance-adjacent B2B SaaS product. Directly relevant to Sumsub's verification and compliance narrative.</p>
+      </a>
+
+      <a href="https://bhanuexcalibur.github.io/EtherFiAudit/" target="_blank" class="wcard">
+        <div class="wcard-top">
+          <div class="wcard-tags">
+            <span class="wcard-tag tag-amber">Identity</span>
+            <span class="wcard-tag tag-blue">Crypto</span>
+          </div>
+          <span class="wcard-arr">↗</span>
+        </div>
+        <div class="wcard-title">EtherFi</div>
+        <p class="wcard-desc">Positioning and messaging audit for a crypto-native financial product, mapping the compliance and trust narrative for a regulated digital asset audience, the same audience Sumsub serves.</p>
+      </a>
+
+      <a href="https://bhanuexcalibur.github.io/RevolutBusiness/" target="_blank" class="wcard">
+        <div class="wcard-top">
+          <div class="wcard-tags">
+            <span class="wcard-tag tag-teal">GTM</span>
+            <span class="wcard-tag tag-pur">Fintech</span>
+          </div>
+          <span class="wcard-arr">↗</span>
+        </div>
+        <div class="wcard-title">Revolut Business</div>
+        <p class="wcard-desc">GTM strategy and messaging for a B2B fintech product, including ICP definition, messaging hierarchy, and multi-channel campaign planning for a global fintech audience.</p>
+      </a>
+
+      <a href="https://bhanuexcalibur.github.io/CashFree/" target="_blank" class="wcard">
+        <div class="wcard-top">
+          <div class="wcard-tags">
+            <span class="wcard-tag tag-blue">Payments</span>
+            <span class="wcard-tag tag-teal">B2B SaaS</span>
+          </div>
+          <span class="wcard-arr">↗</span>
+        </div>
+        <div class="wcard-title">Cashfree Payments</div>
+        <p class="wcard-desc">Product marketing strategy for a B2B payments infrastructure company: competitive analysis, developer-facing messaging, and onboarding GTM. Strong parallel to Sumsub's API and platform positioning.</p>
+      </a>
+
+      <a href="https://bhanuexcalibur.github.io/Boundless-PoW/" target="_blank" class="wcard">
+        <div class="wcard-top">
+          <div class="wcard-tags">
+            <span class="wcard-tag tag-amber">Identity</span>
+            <span class="wcard-tag tag-red">Compliance</span>
+          </div>
+          <span class="wcard-arr">↗</span>
+        </div>
+        <div class="wcard-title">Boundless</div>
+        <p class="wcard-desc">Positioning and GTM work for an identity and compliance-adjacent product, with focus on trust messaging, regulatory framing, and conversion-optimized copy for a skeptical audience.</p>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="border-top:1px solid var(--bdr);padding:48px 5vw;">
+  <div style="max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);">
+      Bhanu Kumar · bhanuexcalibur · bhanukumar0902@gmail.com
+    </div>
+    <div style="display:flex;gap:16px;">
+      <a href="https://www.linkedin.com/in/bhanuexcalibur" target="_blank" class="f-link">LinkedIn</a>
+      <a href="https://drive.google.com/file/d/1l72rBYn2Lq907lYXSALRZhqMUxB7Mwad/view" target="_blank" class="f-link">Resume</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// reading progress
+const rbar = document.getElementById('rbar');
+window.addEventListener('scroll',()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop/(h.scrollHeight-h.clientHeight))*100;
+  rbar.style.width = Math.min(pct,100)+'%';
+});
+
+// mobile menu
+function toggleMob(){
+  const hbg = document.getElementById('hbg');
+  const mob = document.getElementById('mob');
+  hbg.classList.toggle('open');
+  mob.classList.toggle('open');
+  document.body.style.overflow = mob.classList.contains('open') ? 'hidden' : '';
+}
+function closeMob(){
+  document.getElementById('hbg').classList.remove('open');
+  document.getElementById('mob').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// audit tabs
+function swTab(id,btn){
+  document.querySelectorAll('.apanel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('ap-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+// persona data
+const personas = {
+  compliance:{
+    role:'Compliance Officer · Crypto Exchange',
+    headline:'Your regulator doesn\'t care how many times you re-verify the same person. Your conversion rate does.',
+    sub:'Reusable KYC keeps every check in your compliance framework, while letting users who have already been verified by another Sumsub partner skip the queue. You stay compliant. Your onboarding gets faster. Both things are true at once.',
+    hooks:[
+      'Full GDPR compliance: user consent is required before any data is shared between platforms',
+      'Your AML and KYC rules still apply: Reusable KYC inherits the verification, not bypasses it',
+      'Audit trail preserved: every reused verification is logged with the original source and timestamp'
+    ]
+  },
+  product:{
+    role:'Product Manager · Neobank',
+    headline:'Your biggest onboarding drop-off isn\'t a UX problem. It\'s a re-verification problem.',
+    sub:'You\'ve tested the forms, shortened the flow, added progress bars. The drop-off is still there because users who\'ve done this before resent doing it again. Reusable KYC means existing Sumsub-verified users onboard instantly, without changing anything in your current flow.',
+    hooks:[
+      '50% reduction in average onboarding time for returning Sumsub-verified users',
+      'No changes to your existing verification configuration: Reusable KYC layers on top',
+      '30% average improvement in conversion rates for returning applicants'
+    ]
+  },
+  cto:{
+    role:'CTO · Fintech Platform',
+    headline:'Less infrastructure. Same compliance confidence.',
+    sub:'Reusable KYC doesn\'t replace your verification setup. It reduces the number of verifications you run for users who already exist in the Sumsub ecosystem. The integration is lightweight, consent-driven, and runs within your existing compliance configuration.',
+    hooks:[
+      'SDK and API integration: full integration can take under a week (per Mercuryo\'s published case study)',
+      'No dependency on third-party data stores: Sumsub manages the credential, you manage the rules',
+      'Ecosystem network effect: every new Sumsub client grows the pool of pre-verified users available to you'
+    ]
+  },
+  consumer:{
+    role:'End User · Crypto and Fintech',
+    headline:'You\'ve verified your identity before. You shouldn\'t have to do it again.',
+    sub:'Sumsub ID lets you store your verified documents once and reuse them the next time a platform asks for KYC. One upload. Your identity, ready wherever you need it, with full control over what you share and with whom.',
+    hooks:[
+      'Works across 4,000+ platforms in the Sumsub ecosystem: crypto, fintech, banking, e-commerce',
+      'You control what gets shared: every re-use requires your explicit consent',
+      'GDPR-compliant: your data is stored securely and can be deleted at any time'
+    ]
+  }
+};
+
+function showPersona(key){
+  const d = personas[key];
+  const out = document.getElementById('persona-out');
+  document.querySelectorAll('.pbtn').forEach(b=>b.classList.remove('on'));
+  event.currentTarget.classList.add('on');
+  out.innerHTML = `
+    <span class="po-role">${d.role}</span>
+    <div class="po-headline">${d.headline}</div>
+    <p class="po-sub">${d.sub}</p>
+    <div class="po-hooks">
+      ${d.hooks.map(h=>`
+        <div class="po-hook">
+          <div class="hook-icon">✓</div>
+          <span>${h}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+</script>
+
+</body>
+</html>
